@@ -1,0 +1,181 @@
+timestamp: 2012-04-02T11:03:14.836000
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username CHAR(512),
+    first_name CHAR(512),
+    last_name CHAR(512),
+    email CHAR(512),
+    password CHAR(512),
+    created_on TIMESTAMP,
+    modified_on TIMESTAMP,
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2012-04-02T11:03:14.927000
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2012-04-02T11:03:15.041000
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2012-04-02T11:03:15.193000
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2012-04-02T11:03:15.320000
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2012-04-02T11:03:15.432000
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2012-04-02T11:11:22.067000
+CREATE TABLE cliente(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    empresa CHAR(512),
+    contacto CHAR(512),
+    telefono CHAR(512),
+    correo CHAR(512),
+    created_on TIMESTAMP
+);
+success!
+timestamp: 2012-04-02T12:29:41.811000
+CREATE TABLE category(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
+success!
+timestamp: 2012-04-02T12:29:41.932000
+CREATE TABLE products(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    category INTEGER REFERENCES category(id) ON DELETE CASCADE,
+    description CHAR(512),
+    quantity INTEGER,
+    price DOUBLE
+);
+success!
+timestamp: 2012-04-05T00:15:35.320000
+CREATE TABLE categoria(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
+success!
+timestamp: 2012-04-05T00:15:35.438000
+CREATE TABLE articulo(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    descripcion CHAR(512),
+    iva DOUBLE,
+    precio DOUBLE,
+    categoria INTEGER REFERENCES categoria(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2012-04-05T00:16:02.118000
+CREATE TABLE presupuestos(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    presupuesto CHAR(512),
+    fecha TIMESTAMP,
+    id_empresa INTEGER,
+    cotiza DOUBLE
+);
+success!
+timestamp: 2012-04-05T00:16:02.226000
+CREATE TABLE pedidos(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_pres INTEGER,
+    id_articulo INTEGER,
+    precio DOUBLE,
+    cant INTEGER
+);
+success!
+timestamp: 2012-04-06T13:55:25.338000
+ALTER TABLE articulo ADD memo TEXT;
+timestamp: 2012-04-06T13:55:25.460000
+ALTER TABLE articulo ADD link CHAR(512);
+timestamp: 2012-04-06T13:55:25.554000
+ALTER TABLE presupuestos ADD created_on TIMESTAMP;
+timestamp: 2012-04-06T14:05:58.802000
+CREATE TABLE presupuesto(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    presupuesto CHAR(512),
+    created_on TIMESTAMP,
+    id_empresa INTEGER,
+    cotiza DOUBLE
+);
+success!
+timestamp: 2012-04-10T00:21:57.895000
+CREATE TABLE movimientos(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entregado_x CHAR(512),
+    retirado_x CHAR(512),
+    id_articulo INTEGER,
+    cantidad INTEGER,
+    fecha_pedido TIMESTAMP,
+    fecha_devuelta TIMESTAMP,
+    estado INTEGER,
+    Comprobante CHAR(512)
+);
+success!
+timestamp: 2012-04-10T00:37:40.417000
+ALTER TABLE movimientos ADD cliente CHAR(512);
+timestamp: 2012-04-16T21:04:31.606000
+ALTER TABLE movimientos ADD historico TEXT;
+timestamp: 2012-04-16T22:13:38.964000
+CREATE TABLE memomovi(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha_movi TIMESTAMP,
+    estado CHAR(512),
+    Comprobante CHAR(512)
+);
+success!
+timestamp: 2012-04-16T22:24:50.775000
+ALTER TABLE memomovi ADD referencia INTEGER;
+timestamp: 2012-04-19T22:41:41.121000
+ALTER TABLE memomovi ADD cantidad INTEGER;
+timestamp: 2012-04-19T22:41:41.184000
+ALTER TABLE memomovi ADD retirado_x CHAR(512);
+timestamp: 2012-04-19T22:41:41.215000
+ALTER TABLE memomovi ADD entregado_x CHAR(512);
+timestamp: 2012-04-19T22:41:41.262000
+ALTER TABLE memomovi ADD fecha_pedido TIMESTAMP;
+timestamp: 2012-04-19T22:41:41.293000
+ALTER TABLE memomovi ADD fecha_devuelta TIMESTAMP;
+timestamp: 2012-04-19T22:41:41.355000
+ALTER TABLE memomovi ADD id_articulo INTEGER;
+timestamp: 2012-04-19T22:41:41.402000
+ALTER TABLE memomovi ADD cliente INTEGER;
+timestamp: 2012-04-22T11:08:19.661000
+ALTER TABLE movimientos ADD para CHAR(512);
+timestamp: 2012-04-22T11:08:20.503000
+ALTER TABLE memomovi ADD para CHAR(512);
+timestamp: 2012-04-22T11:31:03.758000
+ALTER TABLE movimientos ADD concepto CHAR(512);
+timestamp: 2012-04-22T11:31:03.821000
+ALTER TABLE memomovi ADD concepto CHAR(512);
