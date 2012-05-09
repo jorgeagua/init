@@ -53,7 +53,7 @@ def cliente():
    
 @auth.requires_login()
 def categoria():
-    # presentacion de categorias de articulos
+    # presentacion de categorias de articulosss
     datasource = db(db.categoria.id>0).select()
     powerTable = plugins.powerTable
     powerTable.datasource = datasource
@@ -133,7 +133,7 @@ def presupuestos():
                   callback=URL('default','features', extension='json'),
                   buttons=[
                             ##('details',URL('plugin_PowerGrid','data',args=['read','products'])+'/${id}','_blank','Details of Record ${id}','modal positive left button','magnifier',[600,500]),
-                            ('cargar comprobante',URL('default','prueba',args=['read','movimientos'])+'/${id}','_blank','Editando Registro ${id}','refreshmodal middle button', 'pen',[600,800]),
+                            ('cargar comprobante',URL('plugin_PowerGrid','data',args=['update','movimientos'])+'/${id}','_blank','Editando Registro ${id}','refreshmodal middle button', 'pen',[600,800]),
                             ##('delete',URL('plugin_PowerGrid','data',args=['delete','products'])+'/${id}','_blank','Are you sure you want to delete record ${id}','confirmationmodal right negative button', 'cross'),
                           
                          ],
