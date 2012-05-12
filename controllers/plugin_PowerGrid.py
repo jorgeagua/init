@@ -59,7 +59,31 @@ def data():
     #crud.settings.formstyle = 'divs'
     crud.settings.controller = 'plugin_PowerGrid'
     crud.settings.download_url = URL('download')
-
+    crud.settings.update_deletable = False
+    if (auth.has_membership(role='Admin') or auth.has_membership(role='usuario')):
+        db.movimientos.entregado_x.writable = False
+        db.movimientos.retirado_x.writable = False
+        db.movimientos.id_articulo.writable = False
+        db.movimientos.cantidad.writable = False
+        db.movimientos.fecha_pedido.writable = False
+        db.movimientos.cliente.writable = False
+        db.movimientos.estado_final.writable = False
+    elif (auth.has_membership(role='control')):
+        db.movimientos.entregado_x.writable = False
+        db.movimientos.retirado_x.writable = False
+        db.movimientos.id_articulo.writable = False
+        db.movimientos.cantidad.writable = False
+        db.movimientos.fecha_pedido.writable = False
+        db.movimientos.cliente.writable = False
+        db.movimientos.fecha_devuelta.writable = False
+        db.movimientos.Comprobante.writable = False
+        db.movimientos.concepto.writable = False
+        db.movimientos.estado.writable = False
+        
+        
+        
+        
+    
     def updater(form):
         if not form.errors:
             form.append(SCRIPT('parent.$.nmTop().close();'))

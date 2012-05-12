@@ -179,3 +179,15 @@ timestamp: 2012-04-22T11:31:03.758000
 ALTER TABLE movimientos ADD concepto CHAR(512);
 timestamp: 2012-04-22T11:31:03.821000
 ALTER TABLE memomovi ADD concepto CHAR(512);
+timestamp: 2012-05-11T08:00:36.670000
+CREATE TABLE control(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    referencia INTEGER,
+    estado_comprobante CHAR(512),
+    estado_final CHAR(512)
+);
+success!
+timestamp: 2012-05-11T20:57:02.112000
+ALTER TABLE movimientos ADD estado_comprobante CHAR(512);
+timestamp: 2012-05-11T20:57:02.164000
+ALTER TABLE movimientos ADD estado_final CHAR(512);

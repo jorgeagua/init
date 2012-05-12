@@ -78,12 +78,6 @@ def categoria():
         response.flash = "error en los datos"
     return dict( table=powerTable.create(),form=form)
 
-def editablefunction():
-    id = request.vars.row_id
-    column = request.vars.column
-    db(db.order_lines.id==id).update(column=value)
-    db.commit()
-
 @auth.requires_login()
 def articulo():
     
@@ -122,12 +116,21 @@ def articulo():
 
 
 def features():
-    from plugin_PowerGrid.CallBack import CallBack        
-    return CallBack(db.movimientos.id>0 and db.movimientos.fecha_devuelta==None)
+    from plugin_PowerGrid.CallBack import CallBack
+    if (auth.has_membership(role='Admin')): 
+        return CallBack(db.movimientos.id>0 and (db.movimientos.fecha_devuelta==None or 
+                                                 db.movimientos.estado == "Parte En Poder de Técnico"))
+    elif (auth.has_membership(role='control')):
+        return CallBack(db.movimientos.fecha_devuelta!=None and 
+                                                 db.movimientos.estado != "Parte En Poder de Técnico")
+    elif (auth.has_membership(role='usuario')):
+        return CallBack(db.movimientos.fecha_devuelta==None or 
+                                                 db.movimientos.estado == "Parte En Poder de Técnico")
 
-@auth.requires(auth.has_membership(role='Admin'))   
+@auth.requires_login()
 def presupuestos():
-            
+    
+    
     from plugin_PowerGrid.PowerGrid import PowerGrid
     p = PowerGrid(
                   callback=URL('default','features', extension='json'),
@@ -137,7 +140,7 @@ def presupuestos():
                             ##('delete',URL('plugin_PowerGrid','data',args=['delete','products'])+'/${id}','_blank','Are you sure you want to delete record ${id}','confirmationmodal right negative button', 'cross'),
                           
                          ],
-                  addurl=URL('plugin_PowerGrid','data',args=['create','features']), 
+                  addurl=URL('plugin_PowerGrid','data',args=['create','movimientos']), 
                   addLabel='Add New Record',   
                   addTitle='You are adding a new record',              
                   headers=[['id','Codigo'],['entregado_x','Entrega: '], ['retirado_x','Retira'],
@@ -210,7 +213,7 @@ def presupuestos2():
     class Virtual(object):
         @virtualsettings(label=T('Informacion: '))
         def virtualtooltip(self):
-            return T('se retiro para  <strong>%s</strong>, en concepto de <strong>%s</strong>' %
+            return T('se retiro para  <strong>%s</strong>, en concepto de <strong>%s</strong><br>' %
                      (self.cliente.empresa,self.movimientos.concepto))
         
     datasource = db(db.movimientos.cliente==db.cliente.id).select() 
@@ -239,6 +242,7 @@ def presupuestos2():
 
 @auth.requires(auth.has_membership(role='Admin'))  
 def movimientos():
+    
     mystep = [dict(title='MOVIMIENTOS',Legend='Ingrese los datos solicitados',
                    fields=['entregado_x','retirado_x','id_articulo','cantidad',
                            'estado','Comprobante',
@@ -249,28 +253,17 @@ def movimientos():
     
     if form.accepts(request.vars, session):
         response.flash = "registro aceptado"
-        #rows = db(db.movimientos.id>0).select()
-        #last_row = rows.last()
-        #a=db.memomovi.insert(referencia=last_row.id,entregado_x=last_row.entregado_x,
-                             #retirado_x=last_row.retirado_x,id_articulo=last_row.id_articulo,
-                             #cantidad=last_row.cantidad,fecha_pedido=last_row.fecha_pedido,
-                             #fecha_devuelta=last_row.fecha_devuelta,estado=last_row.estado,
-                             #Comprobante=last_row.Comprobante,cliente=last_row.cliente)
+        rows = db(db.movimientos.id>0).select()
+        last_row = rows.last()
+        a=db.memomovi.insert(referencia=last_row.id,entregado_x=last_row.entregado_x,
+                             retirado_x=last_row.retirado_x,id_articulo=last_row.id_articulo,
+                             cantidad=last_row.cantidad,fecha_pedido=last_row.fecha_pedido,
+                             fecha_devuelta=last_row.fecha_devuelta,estado=last_row.estado,
+                             Comprobante=last_row.Comprobante,cliente=last_row.cliente,
+                             concepto=last_row.concepto)
         #db.commit()
     elif form.errors:
         form.step_validation()
         response.flash = "error en los datos"
     return dict(form=form)
 
-def prueba():
-    variable = request.args[0]
-    form=FORM('Your name:',
-              INPUT(_name='name', requires=IS_NOT_EMPTY()),
-              INPUT(_type='submit'))
-    if form.accepts(request.vars, session):
-        response.flash = 'form accepted '
-    elif form.errors:
-        response.flash = 'form has errors  '
-    else:
-        response.flash = 'please fill the form  ${variable}s'
-    return dict(form=form)

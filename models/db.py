@@ -84,6 +84,9 @@ db.auth_user.email.requires = (IS_EMAIL(error_message=auth.messages.invalid_emai
                                IS_NOT_IN_DB(db, db.auth_user.email))
 auth.define_tables(migrate = settings.migrate)
 auth.settings.actions_disabled=['register','request_reset_password','retrieve_username']
+auth.settings.expiration=1800
+auth.settings.remember_me_form = False
+auth.messages.access_denied = 'Usted no tiene privilegios para esta operacion'
 
 ## configure email
 mail=Mail()
@@ -154,7 +157,8 @@ db.articulo.categoria.requiers=IS_IN_DB(db,'categoria.name','%(name)s',
                                         zero=T('elija una'))
 db.articulo.link.requires=IS_URL()
 
-
+estado_comprobante=["Recibido","En Proceso","Sin Estado"]
+estado_final=["Finalizado","NO Finalizado"]
 estado=["Parte En Poder de Técnico","Salida Con Remito","Salida Con Orden de Servicio","Devuelta a Deposito"]
 concepto=["Alquiler","Venta"]
 db.define_table('movimientos',
@@ -164,11 +168,14 @@ db.define_table('movimientos',
                 Field('cantidad','integer',label=T('Cantidad')),
                 Field('fecha_pedido','datetime',label=T('Fecha de pedido'),default=request.now),
                 Field('fecha_devuelta','datetime',label=T('Fecha de Cierre')),
-                Field('estado','string',default='EN USO',label=T('Estado')),
-                Field('Comprobante','string',default='0',label=T('Nro. de Comprobante')),
+                Field('estado','string',default="Parte En Poder de Técnico",label=T('Estado')),
+                Field('Comprobante','integer',label=T('Nro. de Comprobante')),
                 Field('cliente','integer',label=T('Para uso en')),
-                Field('concepto','string',default='Alquiler',label=T('Concepto'))
+                Field('concepto','string',default='Alquiler',label=T('Concepto')),
+                Field('estado_final','string',label=T('Estado Final de Control'),default="No Finalizado")
                 )
+
+
 # validadores
 db.movimientos.id_articulo.represent = lambda id: db.articulo(id).descripcion
 db.movimientos.cliente.represent = lambda id: db.cliente(id).empresa
@@ -178,12 +185,18 @@ db.movimientos.retirado_x.requires=IS_IN_DB(db,'auth_user.username')
 db.movimientos.estado.requires=IS_IN_SET(estado)
 db.movimientos.cliente.requires=IS_IN_DB(db,'cliente.id')
 db.movimientos.concepto.requires=IS_IN_SET(concepto)
+db.movimientos.estado_final.requires=IS_IN_SET(estado_final)
+db.movimientos.Comprobante.requires=IS_NOT_EMPTY()
+db.movimientos.cantidad.requires=IS_NOT_EMPTY()
 
 # widgetss
 db.movimientos.id_articulo.widget = SQLFORM.widgets.autocomplete(
     request, db.articulo.descripcion, id_field=db.articulo.id)
 db.movimientos.cliente.widget = SQLFORM.widgets.autocomplete(
     request, db.cliente.empresa, id_field=db.cliente.id, min_length=1)
+# actualizadores automaticos
+#db(db.movimientos.estado != "Parte En Poder de Técnico")
+    
 
 db.define_table('memomovi',
                 Field('referencia','integer',label=T('Referencia')),
@@ -201,12 +214,6 @@ db.define_table('memomovi',
 
 
 
-
-
 mail.settings.server = settings.email_server
 mail.settings.sender = settings.email_sender
 mail.settings.login = settings.email_login
-
-
-
-
